@@ -232,11 +232,72 @@
     (let ((subst-in-s-exp
            (lambda (sexp)
              (if (symbol? sexp)
-               (if (eqv? sexp old) new sexp)
-               (subst-map new old sexp)))))
+                 (if (eqv? sexp old) new sexp)
+                 (subst-map new old sexp)))))
       (map subst-in-s-exp slist))))
 ;
 ; ********************
 ; *** Exercise 1.14 ***
 ; ********************
 ;
+; Proof:
+;   IH(n) is that for any vector v=(v0, v1, ...) and any n (0 <= n < length(v)),
+; (partial-vector-sum v n) equals v0+v1+...+vn.
+;   1. When n = 0, (partial-vector-sum v 0) = v0, so IH(0) holds.
+;   2. When 0 < n < length(v) - 1, IH(n) holds.
+;   So (partial-vector-sum v n) = v0+v1+...+vn and 0 < n + 1 < length(v).
+;   Because (partial-vector-sum v (+ n 1)) = (+ vn+1 (pattial-vector-sum v n))
+;   = v0+v1...+vn+vn+1. So IH(k + 1) holds , therefore the induction completes.
+;
+; ********************
+; *** Exercise 1.15 ***
+; ********************
+;
+; duple: Value -> ListofValue
+; usage: (duple 2 3) = (3 3)
+(define duple
+  (lambda (n x)
+    (if (zero? n)
+        '()
+        (cons x (duple (- n 1) x)))))
+;
+; ********************
+; *** Exercise 1.16 ***
+; ********************
+;
+; invert: List -> List
+; usage: (invert '((a 1) (a 2) (1 b) (2 b)))
+;        = ((1 a) (2 a) (b 1) (b 2))
+(define invert
+  (lambda (lst)
+    (let ((invert-helper
+           (lambda (l)
+             (list (cadr l) (car l)))))
+      (map invert-helper lst))))
+;
+; ********************
+; *** Exercise 1.17 ***
+; ********************
+;
+; down: List -> List
+; usage: (down '(1 2 3)) = ((1) (2) (3))
+(define down
+  (lambda (lst)
+      (map list lst)))
+;
+; ********************
+; *** Exercise 1.18 ***
+; ********************
+;
+; swapper: List -> List
+; usage: (swapper 'a 'd '(a b c d)) = (d b c a)
+(define swapper
+  (lambda (s1 s2 lst)
+    (letrec ((swapper-helper
+           (lambda (s)
+             (if (list? s)
+                 (map swapper-helper s)
+                 (cond ((eqv? s s1) s2)
+                       ((eqv? s s2) s1)
+                       (else s))))))
+      (swapper-helper lst))))
